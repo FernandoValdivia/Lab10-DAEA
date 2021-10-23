@@ -17,7 +17,7 @@ namespace Lab_10.Controllers
         // GET: Courses
         public ActionResult Index()
         {
-            return View(db.Course.ToList());
+            return View(db.Course.Where(x => x.state == true).ToList());
         }
 
         // GET: Courses/Details/5
@@ -46,10 +46,11 @@ namespace Lab_10.Controllers
         // más detalles, vea https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CourseID,Title,Credits")] Course course)
+        public ActionResult Create([Bind(Include = "CourseID,Title,Credits,state")] Course course)
         {
             if (ModelState.IsValid)
             {
+                course.state = true;
                 db.Course.Add(course);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -78,11 +79,13 @@ namespace Lab_10.Controllers
         // más detalles, vea https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CourseID,Title,Credits")] Course course)
+        public ActionResult Edit([Bind(Include = "CourseID,Title,Credits,state")] Course course)
         {
             if (ModelState.IsValid)
             {
+                
                 db.Entry(course).State = EntityState.Modified;
+                course.state = true;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -110,7 +113,10 @@ namespace Lab_10.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Course course = db.Course.Find(id);
-            db.Course.Remove(course);
+            db.Entry(course).State = EntityState.Modified;
+            //Cambiar de estado a False
+            course.state = false;
+
             db.SaveChanges();
             return RedirectToAction("Index");
         }

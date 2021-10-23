@@ -17,7 +17,7 @@ namespace Lab_10.Controllers
         // GET: Students1
         public ActionResult Index()
         {
-            return View(db.Student.ToList());
+            return View(db.Student.Where(x => x.state == true).ToList());
         }
 
         // GET: Students1/Details/5
@@ -84,6 +84,7 @@ namespace Lab_10.Controllers
             if (ModelState.IsValid)
             {
                 db.Entry(student).State = EntityState.Modified;
+                student.state = true;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -111,7 +112,8 @@ namespace Lab_10.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Student student = db.Student.Find(id);
-            db.Student.Remove(student);
+            db.Entry(student).State = EntityState.Modified;
+            student.state = false;
             db.SaveChanges();
             return RedirectToAction("Index");
         }
